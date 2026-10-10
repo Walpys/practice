@@ -60,7 +60,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.userName; // або поле, яке використовується як логін
+        return this.userName;
     }
 
     @Override

@@ -110,6 +110,18 @@ public class AuthService {
         return new AuthResponseDto(accessToken, rawRefreshToken);
     }
 
+    @Transactional
+    public void logout(String rawRefreshToken) {
+        if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
+            return;
+        }
+        
+        String tokenHash = hashToken(rawRefreshToken);
+        
+        refreshTokenRepository.findByTokenHash(tokenHash)
+                .ifPresent(refreshTokenRepository::delete);
+    }
+
     private String hashToken(String token) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

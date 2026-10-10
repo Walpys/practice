@@ -86,13 +86,13 @@ public class AuthService {
         }
 
         User user = storedToken.getUser();
-        String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getUserName());
+        String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getUsername());
 
         return new AuthResponseDto(newAccessToken, rawRefreshToken);
     }
 
     private AuthResponseDto generateTokensForUser(User user, String deviceInfo, String ipAddress) {
-        String accessToken = jwtService.generateAccessToken(user.getId(), user.getUserName());
+        String accessToken = jwtService.generateAccessToken(user.getId(), user.getUsername());
         
         String rawRefreshToken = UUID.randomUUID().toString() + "-" + UUID.randomUUID().toString();
         String tokenHash = hashToken(rawRefreshToken);

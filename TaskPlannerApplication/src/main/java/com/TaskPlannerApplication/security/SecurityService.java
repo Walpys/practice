@@ -1,6 +1,7 @@
 package com.TaskPlannerApplication.security;
 
 import com.TaskPlannerApplication.entity.User;
+import com.TaskPlannerApplication.repository.TaskRepository;
 import com.TaskPlannerApplication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class SecurityService {
 
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
     public boolean isUserOwner(UUID targetUserId) {
         if (targetUserId == null) {
@@ -25,6 +27,21 @@ public class SecurityService {
                 .orElse(false);
     }
 
+    public boolean isTaskOwner(UUID taskId) {
+        if (taskId == null) {
+            return false;
+        }
+        
+        Optional<UUID> currentUserId = getCurrentUserId();
+        if (currentUserId.isEmpty()) {
+            return false;
+        }
+
+        return taskRepository.findById(taskId)
+                .map(task -> task.getUser() != null && task.getUser().getId().equals(currentUserId.get()))
+                .orElse(false);
+    }
+    
     public Optional<UUID> getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

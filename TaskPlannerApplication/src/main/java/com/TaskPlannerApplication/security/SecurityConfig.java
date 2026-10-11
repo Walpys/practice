@@ -1,6 +1,5 @@
 package com.TaskPlannerApplication.security;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,19 +25,23 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/api/auth/**", "/error"); 
+                .requestMatchers("/api/auth/**", "/error")
+                .requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-ui.html"
+            );
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().authenticated())
+                .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -9,13 +9,14 @@ import com.TaskPlannerApplication.security.SecurityService;
 import com.TaskPlannerApplication.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -38,13 +39,13 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskShortDto>> getMyTasks(
+    public ResponseEntity<Page<TaskShortDto>> getMyTasks(
             TaskListByUserQueryParameters queryParameters
     ) {
         UUID currentUserId = securityService.getCurrentUserId()
                 .orElseThrow(() -> new AccessDeniedException("Unauthorized"));
 
-        List<TaskShortDto> tasks = taskService.getTasksByUser(currentUserId, queryParameters);
+        Page<TaskShortDto> tasks = taskService.getTasksByUser(currentUserId, queryParameters);
         return ResponseEntity.ok(tasks);
     }
 

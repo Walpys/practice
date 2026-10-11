@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter 
 @Setter
 public class QueryParameters {
-    private int page = 1; 
+    private int page = 0; 
     private int limit = 10;
     private String sortBy = "createdAt";
     private String order = "asc";

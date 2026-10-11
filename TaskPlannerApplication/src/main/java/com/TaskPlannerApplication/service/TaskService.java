@@ -2,6 +2,7 @@ package com.TaskPlannerApplication.service;
 
 
 import com.TaskPlannerApplication.common.QueryParams.task.TaskListByUserQueryParameters;
+import com.TaskPlannerApplication.common.helper.PagingHelper;
 import com.TaskPlannerApplication.dto.task.TaskCreateDto;
 import com.TaskPlannerApplication.dto.task.TaskDetailsDto;
 import com.TaskPlannerApplication.dto.task.TaskFullUpdateDto;
@@ -14,8 +15,13 @@ import com.TaskPlannerApplication.mapper.taskMapper.TaskDetailsDtoMapper;
 import com.TaskPlannerApplication.mapper.taskMapper.TaskFullUpdateDtoMapper;
 import com.TaskPlannerApplication.mapper.taskMapper.TaskShortDtoMapper;
 import com.TaskPlannerApplication.repository.TaskRepository;
+import com.TaskPlannerApplication.repository.specs.TaskSpecification;
 import com.TaskPlannerApplication.security.SecurityService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,19 +53,18 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public List<TaskShortDto> getTasksByUser(UUID userId, TaskListByUserQueryParameters queryParameters) {
+    public Page<TaskShortDto> getTasksByUser(UUID userId, TaskListByUserQueryParameters queryParameters) {
+        Pageable pageable = PagingHelper.toPageable(queryParameters);
 
-        List<Task> tasks = taskRepository.findByUserId(userId);
-        return taskShortDtoMapper.toDtoList(tasks);
+        Specification<Task> spec = TaskSpecification.withFilters(userId, queryParameters);
+
+        Page<Task> taskPage = taskRepository.findAll(spec, pageable);
+        return taskPage.map(taskShortDtoMapper::toDto);
     }
-
+    
     @Transactional(readOnly = true)
     public TaskDetailsDto getTaskById(UUID taskId) {
         Task task = findEntityById(taskId);
-        
-        if (!securityService.isUserOwner(task.getUser().getId())) {
-            throw new AccessDeniedException("Access denied to this task.");
-        }
 
         return taskDetailsDtoMapper.toDto(task);
     }
@@ -78,10 +83,6 @@ public class TaskService {
     @Transactional
     public void deleteTask(UUID taskId) {
         Task task = findEntityById(taskId);
-
-        if (!securityService.isUserOwner(task.getUser().getId())) {
-            throw new AccessDeniedException("You cannot delete tasks of other users.");
-        }
 
         taskRepository.delete(task);
     }

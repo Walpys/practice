@@ -88,7 +88,7 @@ public class AuthService {
         User user = storedToken.getUser();
         String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getUsername());
 
-        return new AuthResponseDto(newAccessToken, rawRefreshToken);
+        return new AuthResponseDto(newAccessToken,user.getId(), rawRefreshToken);
     }
 
     private AuthResponseDto generateTokensForUser(User user, String deviceInfo, String ipAddress) {
@@ -107,7 +107,7 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshToken);
 
-        return new AuthResponseDto(accessToken, rawRefreshToken);
+        return new AuthResponseDto(accessToken,user.getId(), rawRefreshToken);
     }
 
     @Transactional

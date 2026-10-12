@@ -30,8 +30,10 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             return;
         }
 
-        String requestApiKey = request.getHeader("X-API-KEY");
-
+        String requestApiKey = request.getHeader("X-Api-Key");
+        if (requestApiKey == null) {
+            requestApiKey = request.getHeader("x-api-key");
+        }
         if (appConfig.getApiKey() == null || !appConfig.getApiKey().equals(requestApiKey)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");

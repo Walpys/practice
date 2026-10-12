@@ -1,5 +1,12 @@
 
+import { UserProfileTab } from "../components/UserProfileTab";
+import { useAuthStore } from "../store/useAuth.store";
+
 
 export const ProfilePage = () => {
-    return (<h1>profile</h1>);
+    const userId = useAuthStore((state) => state.userId);
+    console.log(userId);
+    return (
+        <UserProfileTab userId = {userId}></UserProfileTab>
+    );
 }

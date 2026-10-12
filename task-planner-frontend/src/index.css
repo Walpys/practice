@@ -1,47 +1,77 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0c0b0b;
+  --color-foreground: #ffffff;
+  --color-foreground-muted: #d1bebe;
+  --color-background-muted: #383535;
+  --color-background-muted-hover: #2b2727;
+  --color-card: #1b1b1b;
+  --color-border: #444444;
+  --color-primary: #ffa31a;
+  --color-primary-hover: #f89a0e;
+  --color-secondary: #3935ff;
+  --color-secondary-hover: #2e399e;
+  --color-danger: #b62222;
+  --color-danger-hover: #9c2727;
+  --color-success: #22c55e;
+  --color-primary-shadow: #b45309;
+  --color-primary-shadow-active: #78350f;
+
+  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+
+@keyframes enter {
+    0% {
+      transform: translateY(-8px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes leave {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-8px);
+      opacity: 0;
+    }
+  }
+
+  --animate-enter: enter 0.2s ease-out;
+  --animate-leave: leave 0.15s ease-in forwards;
+}
+
 
 :root {
-  --background: #0c0b0b;
-  --foreground: #ffffff;
-  --foreground-muted: #d1bebe;
-  --background-muted: #383535;
-  --background-muted-hover: #2b2727;
-  --card: #1b1b1b;
-  --border: #444444;
-  --primary: #ffa31a;
-  --primary-hover: #f89a0e;
-  --secondary: #3935ff;
-  --secondary-hover: #2e399e;
-  --danger: #b62222;
-  --danger-hover: #9c2727;
-  --success: #22c55e;
-  --primary-shadow: #b45309;
-  --primary-shadow-active: #78350f;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
+  font: 18px/145% var(--font-sans);
   letter-spacing: 0.18px;
-  color: var(--foreground-muted);
-  background: var(--background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
 
-  @media (max-width: 1024px) {
+
+
+
+
+@media (max-width: 1024px) {
+  :root {
     font-size: 16px;
   }
 }
 
 body {
   margin: 0;
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
 #root {
@@ -49,38 +79,43 @@ body {
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
+  border-inline: 1px solid var(--color-border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  background-color: var(--background);
+  background-color: var(--color-background);
 }
 
 h1,
 h2 {
-  font-family: var(--heading);
+  font-family: var(--font-heading);
   font-weight: 500;
-  color: var(--foreground);
+  color: var(--color-foreground);
 }
 
 h1 {
   font-size: 56px;
   letter-spacing: -1.68px;
   margin: 32px 0;
-  @media (max-width: 1024px) {
+}
+
+@media (max-width: 1024px) {
+  h1 {
     font-size: 36px;
     margin: 20px 0;
   }
 }
 
 h2 {
-  --foreground: #f3f4f6;
   font-size: 24px;
   line-height: 118%;
   letter-spacing: -0.24px;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
+}
+
+@media (max-width: 1024px) {
+  h2 {
     font-size: 20px;
   }
 }
@@ -91,15 +126,15 @@ p {
 
 code,
 .counter {
-  font-family: var(--mono);
+  font-family: var(--font-mono);
   display: inline-flex;
   border-radius: 4px;
-  color: var(--foreground);
+  color: var(--color-foreground);
 }
 
 code {
   font-size: 15px;
   line-height: 135%;
   padding: 4px 8px;
-  background: var(--background-muted);
+  background: var(--color-background-muted);
 }

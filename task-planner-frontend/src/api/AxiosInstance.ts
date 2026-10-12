@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { AuthResponseDto } from '../model/user.types';
+import { useAuthStore } from '../store/useAuth.store';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const API_KEY = import.meta.env.VITE_API_KEY;
 export const publicApi = axios.create({
@@ -22,40 +23,43 @@ export const apiClient = axios.create({
   timeout: 30000,
 });
 
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+apiClient.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().accessToken;
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+let refreshPromise: Promise<string> | null = null;
+const refreshAccessToken = async (): Promise<string> => {
+  const { data } = await publicApi.post<AuthResponseDto>('/auth/refresh');
+  useAuthStore.getState().setAccessToken(data.accessToken);
+  return data.accessToken;
+};
 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response && error.response.status === 401 && !originalRequest._retry) { //TODO
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/api/auth/')
+    ) {
       originalRequest._retry = true;
 
       try {
-        const { data } = await axios.post<AuthResponseDto>(
-          `${API_URL}/api/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        refreshPromise ??= refreshAccessToken().finally(() => {
+          refreshPromise = null;
+        });
+        const newToken = await refreshPromise;
 
-        const newAccessToken = data.accessToken;
-        localStorage.setItem('accessToken', newAccessToken);
-
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login';
+        useAuthStore.getState().clearAuth()
+        //window.location.href = '/login'
         return Promise.reject(refreshError);
       }
     }

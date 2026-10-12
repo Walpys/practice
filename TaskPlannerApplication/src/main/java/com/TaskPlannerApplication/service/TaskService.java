@@ -3,13 +3,11 @@ package com.TaskPlannerApplication.service;
 
 import com.TaskPlannerApplication.common.QueryParams.task.TaskListByUserQueryParameters;
 import com.TaskPlannerApplication.common.helper.PagingHelper;
-import com.TaskPlannerApplication.dto.task.TaskCreateDto;
-import com.TaskPlannerApplication.dto.task.TaskDetailsDto;
-import com.TaskPlannerApplication.dto.task.TaskFullUpdateDto;
-import com.TaskPlannerApplication.dto.task.TaskShortDto;
+import com.TaskPlannerApplication.dto.task.*;
 import com.TaskPlannerApplication.entity.Task;
 import com.TaskPlannerApplication.entity.User;
 import com.TaskPlannerApplication.exception.task.TaskNotFoundException;
+import com.TaskPlannerApplication.mapper.MappingHelper;
 import com.TaskPlannerApplication.mapper.taskMapper.TaskCreateDtoMapper;
 import com.TaskPlannerApplication.mapper.taskMapper.TaskDetailsDtoMapper;
 import com.TaskPlannerApplication.mapper.taskMapper.TaskFullUpdateDtoMapper;
@@ -17,14 +15,18 @@ import com.TaskPlannerApplication.mapper.taskMapper.TaskShortDtoMapper;
 import com.TaskPlannerApplication.repository.TaskRepository;
 import com.TaskPlannerApplication.repository.specs.TaskSpecification;
 import com.TaskPlannerApplication.security.SecurityService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.UUID;
@@ -78,6 +80,25 @@ public class TaskService {
 
         Task updatedTask = taskRepository.save(task);
         return taskDetailsDtoMapper.toDto(updatedTask);
+    }
+    @Transactional
+    public TaskDetailsDto partialUpdateTask(UUID taskId, TaskPartialUpdate updateDto) {
+        Task task = findEntityById(taskId);
+
+        MappingHelper.updateIfPresent(updateDto.title(), task::setTitle);
+        MappingHelper.updateIfPresent(updateDto.description(), task::setDescription);
+        MappingHelper.updateIfPresent(updateDto.category(), task::setCategory);
+        MappingHelper.updateIfPresent(updateDto.priority(), task::setPriority);
+        MappingHelper.updateIfPresent(updateDto.status(), task::setStatus);
+        MappingHelper.updateIfPresent(updateDto.dueDate(), task::setDueDate);
+
+        Task updatedTask = taskRepository.save(task);
+        return taskDetailsDtoMapper.toDto(updatedTask);
+    }
+
+    @Transactional(readOnly = true)
+    public TaskStatsDto getTaskStatsByUser(UUID userId) {
+        return taskRepository.getTaskStatsByUser(userId);
     }
 
     @Transactional

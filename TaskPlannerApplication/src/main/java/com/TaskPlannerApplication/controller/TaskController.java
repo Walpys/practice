@@ -1,10 +1,7 @@
 package com.TaskPlannerApplication.controller;
 
 import com.TaskPlannerApplication.common.QueryParams.task.TaskListByUserQueryParameters;
-import com.TaskPlannerApplication.dto.task.TaskCreateDto;
-import com.TaskPlannerApplication.dto.task.TaskDetailsDto;
-import com.TaskPlannerApplication.dto.task.TaskFullUpdateDto;
-import com.TaskPlannerApplication.dto.task.TaskShortDto;
+import com.TaskPlannerApplication.dto.task.*;
 import com.TaskPlannerApplication.security.SecurityService;
 import com.TaskPlannerApplication.service.TaskService;
 import jakarta.validation.Valid;
@@ -56,6 +53,26 @@ public class TaskController {
     ) {
         TaskDetailsDto task = taskService.getTaskById(taskId);
         return ResponseEntity.ok(task);
+    }
+
+    @GetMapping("/getStats")
+    public ResponseEntity<TaskStatsDto> getMyTasks(
+    ) {
+        UUID currentUserId = securityService.getCurrentUserId()
+                .orElseThrow(() -> new AccessDeniedException("Unauthorized"));
+
+        TaskStatsDto res = taskService.getTaskStatsByUser(currentUserId);
+        return ResponseEntity.ok(res);
+    }
+
+    @PatchMapping("/{taskId}")
+    @PreAuthorize("@securityService.isTaskOwner(#taskId)")
+    public ResponseEntity<TaskDetailsDto> partialUpdateTask(
+            @PathVariable UUID taskId,
+            @Valid @RequestBody TaskPartialUpdate updateDto
+    ) {
+        TaskDetailsDto updatedTask = taskService.partialUpdateTask(taskId, updateDto);
+        return ResponseEntity.ok(updatedTask);
     }
 
     @PutMapping("/{taskId}")

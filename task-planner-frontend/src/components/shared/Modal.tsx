@@ -1,0 +1,94 @@
+import { useCallback, useEffect, useRef } from "react";
+import Button from "./Button";
+import { createPortal } from "react-dom";
+import CloseIcon from "@mui/icons-material/Close";
+
+interface ModalProps {
+    children: React.ReactNode;
+    title?: string;
+    isOpen: boolean;
+    onClose: () => void;
+    maxWidth?: string;
+    className?: string;
+}
+
+export const Modal = ({ children, title, isOpen, onClose, maxWidth = "max-w-lg", className = "" }: ModalProps) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+    const mouseDownOnOverlayRef = useRef<boolean>(false);
+
+    const DEFAULT_STYLES = "relative bg-background w-full rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 mt-10 mb-10 flex flex-col max-h-[calc(100vh-5rem)]";
+
+    const handleEsc = useCallback((e: KeyboardEvent) => {
+        if (e.key === "Escape") onClose();
+    }, [onClose]);
+
+    useEffect(() => {
+        if (isOpen) {
+            window.addEventListener("keydown", handleEsc);
+            document.body.style.overflow = "hidden";
+        }
+        return () => {
+            window.removeEventListener("keydown", handleEsc);
+            document.body.style.overflow = "unset";
+        };
+    }, [isOpen, handleEsc]);
+
+    const handleOverlayMouseDown = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget) {
+            mouseDownOnOverlayRef.current = true;
+        } else {
+            mouseDownOnOverlayRef.current = false;
+        }
+    };
+
+    const handleOverlayMouseUp = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget && mouseDownOnOverlayRef.current) {
+            onClose();
+        }
+        mouseDownOnOverlayRef.current = false;
+    };
+
+    if (!isOpen) return null;
+
+    return createPortal(
+        <div
+            className="fixed inset-0 z-[2000] flex items-center justify-center overflow-hidden bg-foreground-muted/20 backdrop-blur-[2px] p-4 md:p-16"
+            onMouseDown={handleOverlayMouseDown}
+            onMouseUp={handleOverlayMouseUp}
+        >
+            <div
+                ref={modalRef}
+                className={`
+                    ${DEFAULT_STYLES} 
+                    ${className} 
+                    ${maxWidth}
+                    `}
+            >
+                <div className="flex items-center justify-between p-5 border-b border-border shrink-0 gap-3">
+                    {title ? (
+                        <div className="min-w-0 flex-1">
+                            <h2 className="text-xl font-bold text-foreground truncate" title={title}>
+                                {title}
+                            </h2>
+                        </div>
+                    ) : (
+                        <div />
+                    )}
+                    <Button
+                        variant="text-only"
+                        onClick={onClose}
+                        className="p-1 text-foreground-muted hover:text-foreground hover:bg-card rounded-full transition-colors shrink-0"
+                    >
+                        <CloseIcon fontSize="small" />
+                    </Button>
+                </div>
+                <div className="p-6 overflow-y-auto flex-1 min-h-0">
+                    {children}
+                </div>
+            </div>
+        </div>,
+        document.body
+    );
+};
+
+export default Modal;

@@ -5,7 +5,6 @@ import { useAuthStore } from "../store/useAuth.store";
 
 export const ProfilePage = () => {
     const userId = useAuthStore((state) => state.userId);
-    console.log(userId);
     return (
         <UserProfileTab userId = {userId}></UserProfileTab>
     );

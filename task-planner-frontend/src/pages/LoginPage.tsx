@@ -19,7 +19,6 @@ export function LoginPage() {
     };
 
     const handleSubmit = (e: React.FormEvent) => {
-        console.log('SUBMITTED', formData);
         e.preventDefault();
 
         if (formData.username.trim().length < VALIDATION_RULES.USERNAME_MIN_LENGTH) {

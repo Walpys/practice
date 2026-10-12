@@ -3,6 +3,8 @@ package com.TaskPlannerApplication.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -47,15 +49,18 @@ public class Task {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false,columnDefinition = "task_status")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private TaskStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "priority", nullable = false)
+    @Column(name = "priority", nullable = false,columnDefinition = "task_priority")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private TaskPriority priority;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "category", nullable = false)
+    @Column(name = "category", nullable = false,columnDefinition = "task_category")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private TaskCategory category;
 
     @Column(name = "due_date", nullable = false)

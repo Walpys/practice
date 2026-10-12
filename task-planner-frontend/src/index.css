@@ -49,13 +49,8 @@
 }
 
 
-:root {
-  font: 18px/145% var(--font-sans);
-  letter-spacing: 0.18px;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+#root {
+  min-height: 100svh;
 }
 
 
@@ -73,20 +68,6 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--color-border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  background-color: var(--color-background);
-}
-
 h1,
 h2 {
   font-family: var(--font-heading);

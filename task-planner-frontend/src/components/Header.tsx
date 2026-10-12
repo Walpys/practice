@@ -13,7 +13,7 @@ const NAV_ITEMS = [
     { label: 'Profile', path: '/cabinet', icon: <PersonIcon fontSize="small" className="text-primary" /> },
 ] as const;
 
-export default function Header() {
+export default function Header() { //TODO bigger icon
     const { isAuthenticated } = useAuthStore();
 
     return (

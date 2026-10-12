@@ -15,7 +15,19 @@ export interface TaskDetailsDto {
   dueDate: string;
   createdAt: string;
 }
-
+export interface TaskPartialUpdateDto {
+  title?: string;
+  description?: string;
+  category?: Category;
+  priority?: Priority;
+  status?: Status;
+  dueDate?: string;
+}
+export interface TaskStats {
+  totalTasks: number;
+  inProgressTasks: number;
+  completedTasks: number;
+}
 export interface TaskCreateDto {
   title: string;
   description?: string;
@@ -25,7 +37,7 @@ export interface TaskCreateDto {
   dueDate: string;
 }
 
-export interface TaskFullUpdateDto extends TaskCreateDto {}
+export interface TaskFullUpdateDto extends TaskCreateDto { }
 
 export interface TaskDetailsDto {
   id: string;
@@ -47,7 +59,7 @@ export interface TaskCreateDto {
   dueDate: string;
 }
 
-export interface TaskFullUpdateDto extends TaskCreateDto {}
+export interface TaskFullUpdateDto extends TaskCreateDto { }
 
 export interface TaskShortDto {
   id: string;

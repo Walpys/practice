@@ -1,5 +1,6 @@
 package com.TaskPlannerApplication.security.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,7 +60,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
+        } catch (ExpiredJwtException e) {
+            request.setAttribute("expired", e.getMessage());
         } catch (Exception e) {
+            request.setAttribute("invalid_jwt", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

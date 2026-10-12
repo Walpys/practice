@@ -1,17 +1,24 @@
 package com.TaskPlannerApplication.controller;
 
+import com.TaskPlannerApplication.config.AppConfig;
+import com.TaskPlannerApplication.config.JwtProperties;
 import com.TaskPlannerApplication.dto.auth.AuthResponseDto;
 import com.TaskPlannerApplication.dto.auth.LoginDto;
 import com.TaskPlannerApplication.dto.auth.RegisterDto;
 import com.TaskPlannerApplication.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtProperties jwtProperties;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(
@@ -30,12 +38,22 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(
-            @Valid @RequestBody LoginDto dto,
-            HttpServletRequest request
-    ) {
-        AuthResponseDto response = authService.login(dto, request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto dto,
+                                                 HttpServletRequest request,
+                                                 HttpServletResponse response) {
+        AuthResponseDto result = authService.login(dto, request);
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", result.refreshToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(Duration.ofMillis(jwtProperties.getRefreshExpiration()))
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/refresh")

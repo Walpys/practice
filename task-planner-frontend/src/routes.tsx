@@ -6,10 +6,12 @@ import { ProfilePage } from "./pages/ProfilePage";
 import AuthLayout from "./core/AuthLayout";
 import MainLayout from "./core/MainLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import { ErrorPage, RouteErrorPage } from "./components/shared/ErrorPage";
 
 export const router = createBrowserRouter([
   {
     element: <AuthLayout />,
+    errorElement: <RouteErrorPage />,
     children: [
       {
         path: '/login',
@@ -24,17 +26,21 @@ export const router = createBrowserRouter([
 
   {
     element: <ProtectedRoute />,
+    errorElement: <RouteErrorPage />,
     children: [
       {
         element: <MainLayout />,
+        errorElement: <RouteErrorPage />,
         children: [
           {
             path: '/dashboard',
             element: <DashboardPage />,
+            errorElement: <RouteErrorPage />,
           },
           {
             path: '/cabinet',
             element: <ProfilePage />,
+            errorElement: <RouteErrorPage />,
           },
           {
             path: '/',
@@ -47,6 +53,6 @@ export const router = createBrowserRouter([
 
   {
     path: '*',
-    element: <Navigate to="/dashboard" replace />,
+    element: <ErrorPage statusCode={404} />,
   },
-])
+])

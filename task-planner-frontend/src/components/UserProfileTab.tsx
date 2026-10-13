@@ -1,5 +1,6 @@
 import { useUserById } from '../hooks/user/useUserById';
 import LogoutButton from './shared/LogOutButton';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 
 
 interface UserProfileTabProps {
@@ -7,7 +8,7 @@ interface UserProfileTabProps {
 }
 
 export const UserProfileTab = ({ userId }: UserProfileTabProps) => {
-    const { data: user, isLoading } = useUserById(userId);
+    const { data: user, isLoading, isError } = useUserById(userId);
 
     const currentDate = new Intl.DateTimeFormat('en-US', {
         weekday: 'long',
@@ -15,6 +16,26 @@ export const UserProfileTab = ({ userId }: UserProfileTabProps) => {
         day: 'numeric',
         year: 'numeric',
     }).format(new Date());
+
+    if (isLoading) {
+        return <UserProfileSkeleton />;
+    }
+
+    if (isError) {
+        return (
+            <div className="flex w-full justify-center px-4 py-8">
+                <div className="w-full max-w-2xl flex flex-col items-center gap-4 py-16">
+                    <div className="h-16 w-16 rounded-2xl bg-danger/10 text-danger flex items-center justify-center">
+                        <ErrorOutlineIcon sx={{ fontSize: 32 }} />
+                    </div>
+                    <div className="text-center">
+                        <h3 className="text-lg font-bold text-foreground mb-1">Failed to load profile</h3>
+                        <p className="text-sm text-foreground-muted">Could not fetch user data. Please refresh the page.</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const initials = user?.userName
         ? user.userName.slice(0, 1).toUpperCase()
@@ -43,11 +64,7 @@ export const UserProfileTab = ({ userId }: UserProfileTabProps) => {
 
                     <div className="relative flex flex-col items-center p-6 text-center">
                         <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-2xl font-bold text-primary">
-                            {isLoading ? (
-                                <div className="h-8 w-8 animate-pulse rounded-full bg-primary/20" />
-                            ) : (
-                                initials
-                            )}
+                            {initials}
                         </div>
 
                         <p className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-foreground-muted">
@@ -55,11 +72,7 @@ export const UserProfileTab = ({ userId }: UserProfileTabProps) => {
                         </p>
 
                         <h2 className="break-words text-2xl font-bold text-foreground">
-                            {isLoading ? (
-                                <span className="inline-block h-7 w-40 animate-pulse rounded bg-background-muted" />
-                            ) : (
-                                `Welcome, ${user?.userName || 'Guest'}!`
-                            )}
+                            {`Welcome, ${user?.userName || 'Guest'}!`}
                         </h2>
 
                         <p className="mt-2 text-sm text-foreground-muted">
@@ -98,13 +111,9 @@ export const UserProfileTab = ({ userId }: UserProfileTabProps) => {
                             </div>
 
                             <div className="min-w-0 text-right">
-                                {isLoading ? (
-                                    <span className="inline-block h-4 w-24 animate-pulse rounded bg-background-muted" />
-                                ) : (
-                                    <p className="break-words text-sm font-medium text-foreground">
-                                        {user?.userName || 'Not available'}
-                                    </p>
-                                )}
+                                <p className="break-words text-sm font-medium text-foreground">
+                                    {user?.userName || 'Not available'}
+                                </p>
                             </div>
                         </div>
 
@@ -164,3 +173,55 @@ export const UserProfileTab = ({ userId }: UserProfileTabProps) => {
         </div>
     );
 };
+
+
+const Sk = ({ className = '' }: { className?: string }) => (
+    <div className={`animate-pulse rounded-xl bg-background-muted ${className}`} />
+);
+
+const UserProfileSkeleton = () => (
+    <div className="flex w-full justify-center px-4 py-8">
+        <div className="w-full max-w-2xl">
+            <div className="mb-6 text-center flex flex-col items-center gap-2">
+                <Sk className="h-3.5 w-32" />
+                <Sk className="h-8 w-40 mt-1" />
+                <Sk className="h-4 w-64 mt-1" />
+            </div>
+
+            <div className="relative mb-4 overflow-hidden rounded-2xl border border-border bg-card p-6 flex flex-col items-center gap-4">
+                <div className="h-px absolute inset-x-0 top-0 bg-primary/40" />
+                <Sk className="h-20 w-20 rounded-2xl" />
+                <Sk className="h-3 w-24" />
+                <Sk className="h-7 w-52" />
+                <Sk className="h-4 w-40" />
+                <Sk className="h-7 w-28 rounded-full" />
+            </div>
+
+            <div className="mb-4 overflow-hidden rounded-2xl border border-border bg-card">
+                <div className="border-b border-border px-5 py-4">
+                    <Sk className="h-5 w-36 mb-2" />
+                    <Sk className="h-4 w-48" />
+                </div>
+                <div className="divide-y divide-border">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="flex items-center justify-between gap-4 px-5 py-4">
+                            <div>
+                                <Sk className="h-4 w-20 mb-2" />
+                                <Sk className="h-3.5 w-28" />
+                            </div>
+                            <Sk className="h-4 w-24" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/30 bg-card px-5 py-4">
+                <div>
+                    <Sk className="h-4 w-16 mb-2" />
+                    <Sk className="h-3.5 w-36" />
+                </div>
+                <Sk className="h-9 w-24 rounded-xl" />
+            </div>
+        </div>
+    </div>
+);

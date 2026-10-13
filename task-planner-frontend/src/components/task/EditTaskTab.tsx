@@ -4,6 +4,7 @@ import { TASK_CATEGORIES, TASK_PRIORITIES, TASK_STATUSES } from '../../utils/con
 import { useTaskActions } from '../../hooks/task/useTaskActions';
 import { ModalFooter } from '../shared/ModalFooter';
 import { useTaskById } from '../../hooks/task/useTaskById';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 
 interface TaskEditTabProps {
     taskId: string;
@@ -42,17 +43,19 @@ export const TaskEditTab = ({ taskId, onClose }: TaskEditTabProps) => {
     }, [task]);
 
     if (isTaskLoading) {
-        return (
-            <div className="p-8 text-center text-foreground-muted">
-                Loading task details...
-            </div>
-        );
+        return <TaskEditSkeleton />;
     }
 
     if (!task) {
         return (
-            <div className="p-8 text-center text-foreground-muted">
-                error, no task found
+            <div className="flex flex-col items-center justify-center py-12 gap-4">
+                <div className="h-14 w-14 rounded-2xl bg-danger/10 text-danger flex items-center justify-center">
+                    <ErrorOutlineIcon sx={{ fontSize: 28 }} />
+                </div>
+                <div className="text-center">
+                    <h3 className="text-base font-bold text-foreground mb-1">Task not found</h3>
+                    <p className="text-sm text-foreground-muted">This task may have been deleted or is unavailable.</p>
+                </div>
             </div>
         );
     }
@@ -223,3 +226,47 @@ export const TaskEditTab = ({ taskId, onClose }: TaskEditTabProps) => {
 };
 
 export default TaskEditTab;
+
+
+const Sk = ({ className = '' }: { className?: string }) => (
+    <div className={`animate-pulse rounded-xl bg-background-muted ${className}`} />
+);
+
+const TaskEditSkeleton = () => (
+    <div className="flex w-full justify-center">
+        <div className="w-full max-w-2xl flex flex-col gap-5">
+            <div>
+                <Sk className="h-4 w-20 mb-2" />
+                <Sk className="h-10 w-full rounded-lg" />
+            </div>
+            <div>
+                <Sk className="h-4 w-24 mb-2" />
+                <Sk className="h-20 w-full rounded-lg" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <Sk className="h-4 w-20 mb-2" />
+                    <Sk className="h-10 w-full rounded-lg" />
+                </div>
+                <div>
+                    <Sk className="h-4 w-16 mb-2" />
+                    <Sk className="h-10 w-full rounded-lg" />
+                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <Sk className="h-4 w-14 mb-2" />
+                    <Sk className="h-10 w-full rounded-lg" />
+                </div>
+                <div>
+                    <Sk className="h-4 w-28 mb-2" />
+                    <Sk className="h-10 w-full rounded-lg" />
+                </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-2">
+                <Sk className="h-10 w-24 rounded-xl" />
+                <Sk className="h-10 w-32 rounded-xl" />
+            </div>
+        </div>
+    </div>
+);

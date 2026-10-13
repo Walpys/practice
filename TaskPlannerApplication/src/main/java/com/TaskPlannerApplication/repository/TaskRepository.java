@@ -21,9 +21,9 @@ public interface TaskRepository extends JpaRepository<Task, UUID>, JpaSpecificat
 
     @Query(value = """
                 SELECT 
-                    COUNT(*) as total_tasks,
-                    SUM(CASE WHEN status::text = 'IN_PROGRESS' THEN 1 ELSE 0 END) as in_progress_tasks,
-                    SUM(CASE WHEN status::text = 'COMPLETED' THEN 1 ELSE 0 END) as completed_tasks
+                    COALESCE(COUNT(*), 0) as total_tasks,
+                    COALESCE(SUM(CASE WHEN status::text = 'IN_PROGRESS' THEN 1 ELSE 0 END), 0) as in_progress_tasks,
+                    COALESCE(SUM(CASE WHEN status::text = 'COMPLETED' THEN 1 ELSE 0 END), 0) as completed_tasks
                 FROM tasks
                 WHERE user_id = :userId
             """, nativeQuery = true)
@@ -57,8 +57,6 @@ public interface TaskRepository extends JpaRepository<Task, UUID>, JpaSpecificat
             @Param("monthStart") LocalDateTime monthStart,
             @Param("monthEnd") LocalDateTime monthEnd
     );
-
-
 
 
     @Query("""

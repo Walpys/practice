@@ -3,7 +3,7 @@ import LogoutButton from './shared/LogOutButton';
 
 
 interface UserProfileTabProps {
-    userId: string | null;
+    userId: string;
 }
 
 export const UserProfileTab = ({ userId }: UserProfileTabProps) => {

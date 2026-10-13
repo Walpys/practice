@@ -38,22 +38,3 @@ export const useRegister = () => {
     },
   });
 };
-
-export const useLogout = () => {
-  const navigate = useNavigate();
-  const clearAuth = useAuthStore((state) => state.clearAuth);
-
-  return useMutation({
-    mutationFn: () => authService.logout(),
-    onSuccess: () => {
-      notify.info('Logged out successfully');
-    },
-    onError: () => {
-      notify.info('Logged out');
-    },
-    onSettled: () => {
-      clearAuth();
-      navigate('/login');
-    },
-  });
-};

@@ -62,7 +62,6 @@ public class AuthService {
     public AuthResponseDto login(LoginDto dto, HttpServletRequest request) {
         User user = userRepository.findByUserName(dto.username())
                 .orElseThrow(BadCredentialsException::new);
-
         if (!passwordEncoder.matches(dto.password(), user.getPasswordHash())) {
             throw new BadCredentialsException();
         }

@@ -67,7 +67,19 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String refreshToken = extractRefreshTokenFromCookies(request);
         authService.logout(refreshToken);
-        return ResponseEntity.noContent().build();
+
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false) // Зміни на true, якщо у тебе в продакшені/локально використовується HTTPS
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        // 3. Повертаємо відповідь разом із заголовком очищення куки
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .build();
+
     }
 
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {

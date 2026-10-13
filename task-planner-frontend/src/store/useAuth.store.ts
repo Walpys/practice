@@ -38,7 +38,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       userId: null,
     });
   },
-
   initAuth: () => {
     const accessToken = localStorage.getItem('accessToken');
     const userId = localStorage.getItem('userId');

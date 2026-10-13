@@ -1,5 +1,6 @@
 import React from 'react';
-import { useLogout } from '../../hooks/auth/useAuth';
+import { useLogout } from '../../hooks/auth/useLogout';
+
 export const LogoutButton: React.FC = () => {
     const logoutMutation = useLogout();
 

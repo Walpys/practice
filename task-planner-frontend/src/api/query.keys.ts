@@ -15,3 +15,7 @@ export const taskKeys = {
   detail: (id: string) => [...taskKeys.detailsBase(), id] as const,
 };
 
+export const userKeys = {
+  all: ['user'] as const,
+  byId: (userId:string) => [...authKeys.all, 'user', {userId}] as const,
+};

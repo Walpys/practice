@@ -11,7 +11,6 @@ interface TaskEditTabProps {
 }
 
 export const TaskEditTab = ({ taskId, onClose }: TaskEditTabProps) => {
-    // 1. Усі хуки викликаються завжди на самому верху в одному й тому ж порядку
     const { patchTask, isPending } = useTaskActions();
     const { data: task, isLoading: isTaskLoading } = useTaskById(taskId);
 
@@ -50,7 +49,7 @@ export const TaskEditTab = ({ taskId, onClose }: TaskEditTabProps) => {
         );
     }
 
-    if(!task){
+    if (!task) {
         return (
             <div className="p-8 text-center text-foreground-muted">
                 error, no task found
@@ -88,9 +87,15 @@ export const TaskEditTab = ({ taskId, onClose }: TaskEditTabProps) => {
 
             onClose();
         } catch {
-            // Обробка помилок
         }
     };
+
+    const formattedCreatedAt = task.createdAt
+        ? new Date(task.createdAt).toLocaleString('uk-UA', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        })
+        : null;
 
     return (
         <div className="flex w-full justify-center">
@@ -196,6 +201,12 @@ export const TaskEditTab = ({ taskId, onClose }: TaskEditTabProps) => {
                                 />
                             </div>
                         </div>
+
+                        {formattedCreatedAt && (
+                            <div className="text-xs text-foreground-muted px-1 pt-1">
+                                Created at: <span className="font-medium text-foreground/80">{formattedCreatedAt}</span>
+                            </div>
+                        )}
                     </div>
 
                     <ModalFooter

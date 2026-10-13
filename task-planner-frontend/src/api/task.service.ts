@@ -1,5 +1,5 @@
 import type { PageResponse } from "../model/common.types";
-import type { TaskCreateDto, TaskDetailsDto, TaskFullUpdateDto, TaskListByUserQueryParameters, TaskPartialUpdateDto, TaskShortDto, TaskStats } from "../model/task.types";
+import type { TaskCreateDto, TaskDetailsDto, TaskDetailsStatsDto, TaskFullUpdateDto, TaskListByUserQueryParameters, TaskPartialUpdateDto, TaskShortDto, TaskStats } from "../model/task.types";
 import { apiClient } from "./AxiosInstance";
 
 export const taskService = {
@@ -36,5 +36,10 @@ export const taskService = {
   getTaskStats: async (): Promise<TaskStats> => {
     const { data } = await apiClient.get<TaskStats>(`/tasks/getStats`);
     return data;
-  }
+  },
+  getTaskStatsDetails : async(): Promise<TaskDetailsStatsDto> => {
+    const {data} = await apiClient.get<TaskDetailsStatsDto>(`/tasks/getStatsDetails`);
+    return data;
+  },
+  
 };

@@ -65,6 +65,16 @@ public class TaskController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/getStatsDetails")
+    public ResponseEntity<TaskDetailsStatsDto> getTasksDetails(
+    ) {
+        UUID currentUserId = securityService.getCurrentUserId()
+                .orElseThrow(() -> new AccessDeniedException("Unauthorized"));
+
+        TaskDetailsStatsDto res = taskService.getStatsDetails(currentUserId);
+        return ResponseEntity.ok(res);
+    }
+
     @PatchMapping("/{taskId}")
     @PreAuthorize("@securityService.isTaskOwner(#taskId)")
     public ResponseEntity<TaskDetailsDto> partialUpdateTask(

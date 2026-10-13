@@ -3,9 +3,12 @@ package com.TaskPlannerApplication.service;
 
 import com.TaskPlannerApplication.common.QueryParams.task.TaskListByUserQueryParameters;
 import com.TaskPlannerApplication.common.helper.PagingHelper;
+import com.TaskPlannerApplication.dto.projection.task.PeriodCounts;
+import com.TaskPlannerApplication.dto.projection.task.StatusCount;
 import com.TaskPlannerApplication.dto.task.*;
 import com.TaskPlannerApplication.entity.Task;
 import com.TaskPlannerApplication.entity.User;
+import com.TaskPlannerApplication.enums.task.TaskStatus;
 import com.TaskPlannerApplication.exception.task.TaskNotFoundException;
 import com.TaskPlannerApplication.mapper.MappingHelper;
 import com.TaskPlannerApplication.mapper.taskMapper.TaskCreateDtoMapper;
@@ -28,8 +31,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,6 +103,55 @@ public class TaskService {
 
         Task updatedTask = taskRepository.save(task);
         return taskDetailsDtoMapper.toDto(updatedTask);
+    }
+
+
+    @Transactional(readOnly = true)
+    public TaskDetailsStatsDto getStatsDetails(UUID userId) {
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime weekStart = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.MIN);
+        LocalDateTime weekEnd = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
+
+        LocalDateTime monthStart = now.with(TemporalAdjusters.firstDayOfMonth()).with(LocalTime.MIN);
+        LocalDateTime monthEnd = now.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
+
+
+
+        Map<String, Long> statusBreakdown = taskRepository.countByStatus(userId).stream()
+                .collect(Collectors.toMap(
+                        s -> s.getStatus().name(),
+                        StatusCount::getCnt
+                ));
+
+        long total = statusBreakdown.values().stream().mapToLong(Long::longValue).sum();
+
+        PeriodCounts p = taskRepository.getPeriodCounts(
+                userId,
+                TaskStatus.COMPLETED,
+                now,
+                weekStart,
+                weekEnd,
+                monthStart,
+                monthEnd
+        );
+
+        Map<String, Double> rates = taskRepository.countByCategory(userId, TaskStatus.COMPLETED).stream()
+                .collect(Collectors.toMap(
+                        c -> c.getCategory().name(),
+                        c -> c.getTotal() == 0 ? 0.0 : (double) c.getDone() * 100.0 / c.getTotal()
+                ));
+
+        return new TaskDetailsStatsDto(
+                total,
+                statusBreakdown,
+                p.completedWeek(),
+                p.uncompletedWeek(),
+                p.completedMonth(),
+                p.uncompletedMonth(),
+                rates,
+                p.overdue()
+        );
     }
 
     @Transactional(readOnly = true)

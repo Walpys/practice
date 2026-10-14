@@ -2,10 +2,6 @@ import type { UserDto, UserFullUpdateDto } from "../model/user.types";
 import { apiClient } from "./AxiosInstance";
 
 export const userService = {
-  getAllUsers: async (): Promise<UserDto[]> => {
-    const { data } = await apiClient.get<UserDto[]>('/users');
-    return data;
-  },
 
   getUserById: async (id: string): Promise<UserDto> => {
     const { data } = await apiClient.get<UserDto>(`/users/${id}`);

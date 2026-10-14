@@ -1,0 +1,32 @@
+package com.TaskPlannerApplication.common.helper;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import com.TaskPlannerApplication.common.QueryParams.QueryParameters;
+
+public class PagingHelper {
+
+    public static <T extends QueryParameters> Pageable toPageable(T params) {
+        Sort.Direction direction = params.getOrder().equalsIgnoreCase("desc")
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        String sortField = (params.getSortBy() == null || params.getSortBy().isEmpty())
+                ? "createdAt"
+                : params.getSortBy();
+
+        Sort sort = Sort.by(direction, sortField);
+        int pageIndex = Math.max(0, params.getPage());
+        int pageSize = Math.max(1, params.getLimit());
+
+        return PageRequest.of(pageIndex, pageSize, sort);
+    }
+
+    public static <T extends QueryParameters> Pageable toPageableUnsorted(T params) {
+        return PageRequest.of(
+                Math.max(0, params.getPage()),
+                Math.max(1, params.getLimit()));
+    }
+}

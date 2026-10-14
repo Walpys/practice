@@ -7,4 +7,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  preview: {
+    allowedHosts: [
+      'practice-1-ucsj.onrender.com',
+      '.onrender.com'
+    ]
+  }
 })

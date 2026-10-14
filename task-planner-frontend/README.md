@@ -1,75 +1,112 @@
-# React + TypeScript + Vite
+# Task Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Task Planner** --- вебзастосунок для особистого планування завдань.
+Він допомагає організовувати справи, відстежувати їхній статус і
+пріоритет, керувати дедлайнами та переглядати статистику виконання.
 
-Currently, two official plugins are available:
+**Демо:** [Відкрити Task
+Planner](https://practice-1-ucsj.onrender.com/dashboard)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Основні можливості
 
-## React Compiler
+### Обліковий запис
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-   Реєстрація нового користувача та вхід у систему.
+-   Авторизація для доступу до особистих завдань.
+-   Вихід з облікового запису.
+-   Перегляд і редагування даних профілю.
 
-## Expanding the ESLint configuration
+### Керування завданнями
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+-   Створення завдань із назвою, описом, категорією, пріоритетом,
+    статусом і датою виконання.
+-   Перегляд списку завдань.
+-   Редагування параметрів завдання.
+-   Видалення завдань.
+-   Зміна статусу завдання відповідно до поточного стану роботи.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Пошук, фільтрація та сортування
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Список завдань можна впорядковувати й звужувати за допомогою фільтрів.
+Для роботи зі списком передбачені параметри на кшталт статусу, категорії
+та пріоритету, а також сортування за доступними характеристиками
+завдань. Завдання завантажуються частинами під час перегляду списку.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Статистика
 
+Розділ статистики надає узагальнену інформацію про завдання та їхні
+стани. Для візуального подання використовуються діаграми, зокрема
+кругова та стовпчикова. Вони допомагають швидше оцінити розподіл завдань
+і побачити основні тенденції.
+
+## Інтерфейс
+
+Інтерфейс поділено на окремі сторінки та вкладки для роботи з обліковим
+записом, списком завдань, створенням і редагуванням завдань та
+переглядом статистики. Для типових дій використовуються форми, меню,
+фільтри, модальні вікна й повідомлення про результат операцій.
+
+## Технології
+
+### Frontend
+
+-   **React** --- побудова користувацького інтерфейсу.
+-   **TypeScript** --- типізація компонентів, моделей і логіки
+    застосунку.
+-   **Vite** --- інструменти розробки та збирання frontend.
+-   **React Router** --- маршрутизація між сторінками.
+-   **TanStack Query** --- отримання даних із API, кешування та
+    оновлення запитів.
+-   **Zustand** --- керування локальним станом інтерфейсу.
+-   **Axios** --- HTTP-запити до backend.
+-   **Recharts** --- побудова діаграм статистики.
+-   **Material UI, Radix UI та Tailwind CSS** --- компоненти й
+    оформлення інтерфейсу.
+
+### Backend
+
+-   **Java 21** та **Spring Boot** --- серверна частина застосунку.
+-   **Spring Web MVC** --- REST API для взаємодії з frontend.
+-   **Spring Data JPA / Hibernate** --- робота з реляційними даними.
+-   **Spring Security** та **JWT** --- автентифікація й захист API.
+-   **Bean Validation** --- перевірка вхідних даних.
+-   **PostgreSQL** --- зберігання користувачів, завдань і токенів
+    оновлення.
+-   **Flyway** --- керування міграціями структури бази даних.
+-   **Springdoc OpenAPI** --- документація API.
+
+## Структура проєкту
+
+``` text
+practice/
+├── task-planner-frontend/     # React-клієнт
+│   └── src/
+│       ├── api/               # Запити до backend
+│       ├── components/        # Компоненти інтерфейсу
+│       ├── hooks/             # Логіка запитів і дій
+│       ├── model/             # Типи та моделі даних
+│       ├── pages/             # Сторінки застосунку
+│       ├── routes.tsx         # Маршрутизація
+│       └── store/             # Стан авторизації та фільтрів
+│
+└── TaskPlannerApplication/    # Java backend
+    └── src/main/
+        ├── java/              # Контролери, сервіси, репозиторії та конфігурація
+        └── resources/
+            └── db/migration/  # SQL-міграції бази даних
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Взаємодія компонентів
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1.  Користувач працює з інтерфейсом у браузері.
+2.  Frontend надсилає HTTP-запити до REST API.
+3.  Backend перевіряє запит, застосовує бізнес-логіку та взаємодіє з
+    PostgreSQL.
+4.  API повертає результат, а frontend оновлює список завдань, профіль
+    або статистику.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Демо
 
-```
+Застосунок доступний за посиланням:
+
+**<https://practice-1-ucsj.onrender.com/dashboard>**

@@ -7,7 +7,7 @@ import Button from "../../shared/Button";
 
 
 const sortOptions: Option[] = [
-    { label: "Due Date", value: "dueTo" },
+    { label: "Due Date", value: "dueDate" },
     { label: "Priority", value: "priority" },
     { label: "Date Added", value: "createdAt" },
 ];

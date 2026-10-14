@@ -28,7 +28,6 @@ public record TaskPartialUpdate(
 
         JsonNullable<TaskStatus> status,
 
-        @FutureOrPresent(message = "Due date must be in the present or future")
         JsonNullable<LocalDateTime> dueDate
 ) {
 }

@@ -26,6 +26,6 @@ public record TaskFullUpdateDto(
 
         @NotNull(message = "Task status is required") TaskStatus status,
 
-        @NotNull(message = "Due date is required") @FutureOrPresent(message = "Due date must be in the present or future") LocalDateTime dueDate) {
+        @NotNull(message = "Due date is required") LocalDateTime dueDate) {
 
 }

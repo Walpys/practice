@@ -27,6 +27,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtProperties jwtProperties;
+    private final AppConfig appConfig;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(
@@ -70,12 +71,11 @@ public class AuthController {
 
         ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false) // Зміни на true, якщо у тебе в продакшені/локально використовується HTTPS
+                .secure(appConfig.isSecured())
                 .path("/")
                 .maxAge(0)
                 .build();
 
-        // 3. Повертаємо відповідь разом із заголовком очищення куки
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
                 .build();

@@ -121,7 +121,7 @@ export const useTaskActions = () => {
         mutationFn: (taskId: string) => taskService.deleteTask(taskId),
         onSuccess: () => {
             notify.info('Task deleted');
-            queryClient.invalidateQueries({ queryKey: listsBaseQueryKey, exact: false });
+            queryClient.invalidateQueries({ queryKey: taskKeys.all, exact: false });
         },
     });
 

@@ -25,6 +25,7 @@
     "react-hot-toast": "^2.6.1",
     "react-intersection-observer": "^11.0.1",
     "react-router-dom": "^7.18.4",
+    "recharts": "^3.10.1",
     "tailwind": "^4.0.0",
     "tailwind-merge": "^3.7.0",
     "zustand": "^5.0.15"
